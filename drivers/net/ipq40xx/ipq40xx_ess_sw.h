@@ -72,4 +72,8 @@
 #define S17_PORT4_HOL_CTRL1		0x0994
 #define S17_PORT5_HOL_CTRL0		0x0998
 #define S17_PORT5_HOL_CTRL1		0x099c
+
+#define ess_mib(x)	((0x1000 | (x * 0x100)))
+#define ESS_MIB_OFFSET	0x30
+#define ESS_MIB_EN	(1 << 0)
 #endif
