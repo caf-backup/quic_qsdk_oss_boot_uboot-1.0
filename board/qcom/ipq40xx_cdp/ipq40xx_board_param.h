@@ -715,7 +715,7 @@ gpio_func_data_t uart1_gpio_dk01[] = {
 	{
 		.gpio = 60,
 		.func = 2,
-		.pull = GPIO_NO_PULL,
+		.pull = GPIO_PULL_DOWN,
 		.oe = GPIO_OE_ENABLE
 	},
 	{
@@ -730,7 +730,7 @@ gpio_func_data_t uart1_gpio_dk04[] = {
 	{
 		.gpio = 16,
 		.func = 1,
-		.pull = GPIO_NO_PULL,
+		.pull = GPIO_PULL_DOWN,
 		.oe = GPIO_OE_ENABLE
 	},
 	{
@@ -1142,6 +1142,8 @@ board_ipq40xx_params_t board_params[] = {
 			ipq40xx_edma_cfg(0, 5, PSGMII,
 			0, 1, 2, 3, 4)
 			},
+		.mmc_gpio = mmc_ap_dk04,
+		.mmc_gpio_count = ARRAY_SIZE(mmc_ap_dk04),
 		.spi_nand_available = 0,
 		.nor_nand_available = 1,
 		.nor_emmc_available = 0,
