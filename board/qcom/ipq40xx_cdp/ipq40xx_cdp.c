@@ -774,14 +774,47 @@ struct vlan_tag {
 	unsigned int r1;
 };
 
+struct eth_param{
+	int nodeoff;
+	int mdio_addr;
+	int poll;
+	int speed;
+	int duplex;
+	unsigned long gmac_no;
+};
+
+static void ipq40xx_set_setprop(void *blob, int nodeoff, unsigned long gmac_no,
+							char *str, int val)
+{
+	int ret;
+
+	ret = fdt_setprop(blob, nodeoff, str, &val, sizeof(val));
+	if (ret)
+		debug("unable to set property %s for %d with error %d\n",
+							str, gmac_no, ret);
+}
+
+static void ipq40xx_populate_eth_params(void *blob, struct eth_param *port)
+{
+	ipq40xx_set_setprop(blob, port->nodeoff, port->gmac_no,
+				"qcom,phy_mdio_addr", htonl(port->mdio_addr));
+	ipq40xx_set_setprop(blob, port->nodeoff, port->gmac_no,
+				"qcom,poll_required", htonl(port->poll));
+	ipq40xx_set_setprop(blob, port->nodeoff, port->gmac_no,
+				"qcom,forced_speed", htonl(port->speed));
+	ipq40xx_set_setprop(blob, port->nodeoff, port->gmac_no,
+				"qcom,forced_duplex", htonl(port->duplex));
+}
+
 /*
  * Logic to patch Ethernet params.
  */
-int ipq40xx_patch_eth_params(void *blob, unsigned long gmac_no)
+static int ipq40xx_patch_eth_params(void *blob, unsigned long gmac_no)
 {
 	int nodeoff, nodeoff_c;
 	int ret, i;
 	struct vlan_tag vlan;
+	struct eth_param port_config;
 	const char *eth2_prop[] = {"/soc/edma/gmac2", "/soc/edma/gmac3",
 							"/soc/edma/gmac4"};
 	const char *alias_prop[] = {"ethernet2", "ethernet3", "ethernet4"};
@@ -818,8 +851,8 @@ int ipq40xx_patch_eth_params(void *blob, unsigned long gmac_no)
 			printf("ipq: unable to find compatiable edma node\n");
 			return -1;
 		}
-		vlan.r0 = 0x1;
-		vlan.r1 = 0x10;
+		vlan.r0 = htonl(0x1);
+		vlan.r1 = htonl(0x10);
 		ret = fdt_setprop(blob, nodeoff_c, "vlan_tag",
 			&vlan, sizeof(vlan));
 		if (ret)
@@ -830,8 +863,8 @@ int ipq40xx_patch_eth_params(void *blob, unsigned long gmac_no)
 			printf("ipq: unable to find compatiable edma node\n");
 			return -1;
 		}
-		vlan.r0 = 0x3;
-		vlan.r1 = 0xE;
+		vlan.r0 = htonl(0x3);
+		vlan.r1 = htonl(0xE);
 		ret = fdt_setprop(blob, nodeoff_c, "vlan_tag",
 			&vlan, sizeof(vlan));
 		if (ret)
@@ -843,8 +876,8 @@ int ipq40xx_patch_eth_params(void *blob, unsigned long gmac_no)
 			printf("ipq: unable to find compatiable edma node\n");
 			return -1;
 		}
-		vlan.r0 = 0x1;
-		vlan.r1 = 0x10;
+		vlan.r0 = htonl(0x1);
+		vlan.r1 = htonl(0x10);
 		ret = fdt_setprop(blob, nodeoff_c, "vlan_tag",
 			&vlan, sizeof(vlan));
 		if (ret)
@@ -855,8 +888,8 @@ int ipq40xx_patch_eth_params(void *blob, unsigned long gmac_no)
 			printf("ipq: unable to find compatiable edma node\n");
 			return -1;
 		}
-		vlan.r0 = 0x3;
-		vlan.r1 = 0x8;
+		vlan.r0 = htonl(0x3);
+		vlan.r1 = htonl(0x8);
 		ret = fdt_setprop(blob, nodeoff_c, "vlan_tag",
 			&vlan, sizeof(vlan));
 		if (ret)
@@ -867,8 +900,8 @@ int ipq40xx_patch_eth_params(void *blob, unsigned long gmac_no)
 			printf("ipq: unable to find compatiable edma node\n");
 			return -1;
 		}
-		vlan.r0 = 0x4;
-		vlan.r1 = 0x6;
+		vlan.r0 = htonl(0x4);
+		vlan.r1 = htonl(0x6);
 		ret = fdt_setprop(blob, nodeoff_c, "vlan_tag",
 			&vlan, sizeof(vlan));
 		if (ret)
@@ -880,48 +913,81 @@ int ipq40xx_patch_eth_params(void *blob, unsigned long gmac_no)
 			printf("ipq: unable to find compatiable edma node\n");
 			return -1;
 		}
-		vlan.r0 = 0x1;
-		vlan.r1 = 0x10;
+		vlan.r0 = htonl(0x1);
+		vlan.r1 = htonl(0x10);
 		ret = fdt_setprop(blob, nodeoff_c, "vlan_tag",
 			&vlan, sizeof(vlan));
 		if (ret)
 			debug("%s: unable to set property\n", __func__);
+
+		port_config.nodeoff = nodeoff_c;
+		port_config.mdio_addr = 3;
+		port_config.poll = 1;
+		port_config.speed = 1000;
+		port_config.duplex = 1;
+		port_config.gmac_no = gmac_no;
+		ipq40xx_populate_eth_params(blob, &port_config);
 
 		nodeoff_c = fdt_path_offset(blob, "/soc/edma/gmac2");
 		if (nodeoff_c < 0) {
 			printf("ipq: unable to find compatiable edma node\n");
 			return -1;
 		}
-		vlan.r0 = 0x3;
-		vlan.r1 = 0x8;
+		vlan.r0 = htonl(0x3);
+		vlan.r1 = htonl(0x8);
 		ret = fdt_setprop(blob, nodeoff_c, "vlan_tag",
 			&vlan, sizeof(vlan));
 		if (ret)
 			debug("%s: unable to set property\n", __func__);
+
+		port_config.nodeoff = nodeoff_c;
+		port_config.mdio_addr = 2;
+		port_config.poll = 1;
+		port_config.speed = 1000;
+		port_config.duplex = 1;
+		port_config.gmac_no = gmac_no;
+		ipq40xx_populate_eth_params(blob, &port_config);
 
 		nodeoff_c = fdt_path_offset(blob, "/soc/edma/gmac3");
 		if (nodeoff_c < 0) {
 			printf("ipq: unable to find compatiable edma node\n");
 			return -1;
 		}
-		vlan.r0 = 0x4;
-		vlan.r1 = 0x4;
+		vlan.r0 = htonl(0x4);
+		vlan.r1 = htonl(0x4);
 		ret = fdt_setprop(blob, nodeoff_c, "vlan_tag",
 			&vlan, sizeof(vlan));
 		if (ret)
 			debug("%s: unable to set property\n", __func__);
+
+		port_config.nodeoff = nodeoff_c;
+		port_config.mdio_addr = 1;
+		port_config.poll = 1;
+		port_config.speed = 1000;
+		port_config.duplex = 1;
+		port_config.gmac_no = gmac_no;
+		ipq40xx_populate_eth_params(blob, &port_config);
 
 		nodeoff_c = fdt_path_offset(blob, "/soc/edma/gmac4");
 		if (nodeoff_c < 0) {
 			printf("ipq: unable to find compatiable edma node\n");
 			return -1;
 		}
-		vlan.r0 = 0x5;
-		vlan.r1 = 0x2;
+		vlan.r0 = htonl(0x5);
+		vlan.r1 = htonl(0x2);
 		ret = fdt_setprop(blob, nodeoff_c, "vlan_tag",
 			&vlan, sizeof(vlan));
 		if (ret)
 			debug("%s: unable to set property\n", __func__);
+
+		port_config.nodeoff = nodeoff_c;
+		port_config.mdio_addr = 0;
+		port_config.poll = 1;
+		port_config.speed = 1000;
+		port_config.duplex = 1;
+		port_config.gmac_no = gmac_no;
+		ipq40xx_populate_eth_params(blob, &port_config);
+
 		break;
 	}
 	nodeoff = fdt_node_offset_by_compatible(blob,
@@ -931,6 +997,7 @@ int ipq40xx_patch_eth_params(void *blob, unsigned long gmac_no)
 		return -1;
 	}
 
+	gmac_no = htonl(gmac_no);
 	ret = fdt_setprop(blob, nodeoff, "qcom,num_gmac",
 		&gmac_no, sizeof(gmac_no));
 	if (ret)
