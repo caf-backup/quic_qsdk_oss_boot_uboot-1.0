@@ -770,13 +770,6 @@ int mmc_change_freq(struct mmc *mmc)
 	if (mmc->version < MMC_VERSION_4)
 		return 0;
 
-	err = mmc_send_ext_csd(mmc, ext_csd);
-
-	if (err)
-		return err;
-
-	cardtype = ext_csd[EXT_CSD_CARD_TYPE] & 0xf;
-
 	err = mmc_switch(mmc, EXT_CSD_CMD_SET_NORMAL, EXT_CSD_HS_TIMING, 1);
 
 	if (err)
@@ -791,6 +784,8 @@ int mmc_change_freq(struct mmc *mmc)
 	/* No high-speed support */
 	if (!ext_csd[EXT_CSD_HS_TIMING])
 		return 0;
+
+	cardtype = ext_csd[EXT_CSD_CARD_TYPE] & 0xf;
 
 	/* High Speed is set, there are two types: 52MHz and 26MHz */
 	if (cardtype & MMC_HS_52MHZ)
