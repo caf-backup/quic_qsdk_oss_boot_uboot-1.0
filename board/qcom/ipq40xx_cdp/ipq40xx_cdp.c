@@ -592,12 +592,12 @@ int board_eth_init(bd_t *bis)
 	case MACH_TYPE_IPQ40XX_AP_DK01_1_S1:
 	case MACH_TYPE_IPQ40XX_AP_DK01_1_C2:
 	case MACH_TYPE_IPQ40XX_AP_DK05_1_C1:
-		mdelay(100);
+		mdelay(1);
 		writel(GPIO_OUT, GPIO_IN_OUT_ADDR(62));
 		ipq40xx_register_switch(ipq40xx_qca8075_phy_init);
 		break;
 	case MACH_TYPE_IPQ40XX_AP_DK01_1_C1:
-		mdelay(100);
+		mdelay(1);
 		writel(GPIO_OUT, GPIO_IN_OUT_ADDR(59));
 		ipq40xx_register_switch(ipq40xx_qca8075_phy_init);
 		break;
@@ -605,23 +605,23 @@ int board_eth_init(bd_t *bis)
 	case MACH_TYPE_IPQ40XX_AP_DK04_1_C1:
 	case MACH_TYPE_IPQ40XX_AP_DK04_1_C3:
 	case MACH_TYPE_IPQ40XX_AP_DK04_1_C5:
-		mdelay(100);
+		mdelay(1);
 		writel(GPIO_OUT, GPIO_IN_OUT_ADDR(47));
 		ipq40xx_register_switch(ipq40xx_qca8075_phy_init);
 		break;
 	 case MACH_TYPE_IPQ40XX_AP_DK04_1_C2:
-		mdelay(100);
+		mdelay(1);
 		writel(GPIO_OUT, GPIO_IN_OUT_ADDR(67));
 		ipq40xx_register_switch(ipq40xx_qca8075_phy_init);
 		break;
 	 case MACH_TYPE_IPQ40XX_AP_DK06_1_C1:
-		mdelay(100);
+		mdelay(1);
 		writel(GPIO_OUT, GPIO_IN_OUT_ADDR(19));
 		ipq40xx_register_switch(ipq40xx_qca8075_phy_init);
 		break;
 	case MACH_TYPE_IPQ40XX_AP_DK07_1_C1:
 	case MACH_TYPE_IPQ40XX_AP_DK07_1_C2:
-		mdelay(100);
+		mdelay(1);
 		writel(GPIO_OUT, GPIO_IN_OUT_ADDR(41));
 		ipq40xx_register_switch(ipq40xx_qca8075_phy_init);
 		break;
