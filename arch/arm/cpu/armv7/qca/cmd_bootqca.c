@@ -269,7 +269,7 @@ static int do_boot_signedimg(cmd_tbl_t *cmdtp, int flag, int argc, char *const a
 			request);
 
 		if (debug)
-			printf(runcmd);
+			printf("runcmd: %s\n", runcmd);
 
 		if (run_command(runcmd, 0) != CMD_RET_SUCCESS)
 			return CMD_RET_FAILURE;
@@ -311,7 +311,7 @@ static int do_boot_signedimg(cmd_tbl_t *cmdtp, int flag, int argc, char *const a
 			request, sfi->hlos.offset, sfi->hlos.size);
 
 		if (debug)
-			printf(runcmd);
+			printf("runcmd: %s\n", runcmd);
 
 		if (run_command(runcmd, 0) != CMD_RET_SUCCESS)
 			return CMD_RET_FAILURE;
@@ -335,7 +335,7 @@ static int do_boot_signedimg(cmd_tbl_t *cmdtp, int flag, int argc, char *const a
 				runcmd, sizeof(runcmd));
 
 	if (debug)
-		printf(runcmd);
+		printf("runcmd: %s\n", runcmd);
 
 #ifdef CONFIG_QCA_MMC
 	board_mmc_deinit();
@@ -476,9 +476,6 @@ static int do_boot_unsignedimg(cmd_tbl_t *cmdtp, int flag, int argc, char *const
 			snprintf(runcmd, sizeof(runcmd), "mmc read 0x%x 0x%x 0x%x",
 					CONFIG_SYS_LOAD_ADDR,
 					(uint)disk_info.start, (uint)disk_info.size);
-
-			if (run_command(runcmd, 0) != CMD_RET_SUCCESS)
-				return CMD_RET_FAILURE;
 		}
 
 #endif   	/* CONFIG_QCA_MMC   */
