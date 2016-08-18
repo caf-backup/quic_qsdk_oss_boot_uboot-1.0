@@ -107,7 +107,6 @@ qca_pio_read(qca_mmc *host, char *buffer, unsigned int remain)
 
 	do {
 		status = readl(host->base + MMCISTATUS);
-		udelay(1);
 
 		if (status & error) {
 			break;
