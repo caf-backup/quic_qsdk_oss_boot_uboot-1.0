@@ -59,6 +59,14 @@ static const struct giga_spi_flash_params giga_spi_flash_table[] = {
 		.name = "GD25Q16",
 	},
 	{
+		.id = 0x4017,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_blocks = 128,
+		.name = "GD25Q64",
+	},
+	{
 		.id = 0x4018,
 		.page_size = 256,
 		.pages_per_sector = 16,
