@@ -1324,6 +1324,31 @@ board_ipq40xx_params_t board_params[] = {
 		.dtb_config_name = { "config@10", "config@ap.dk07.1-c1" },
 	},
 	{
+		.machid = MACH_TYPE_IPQ40XX_AP_DK07_1_C2,
+		.ddr_size = (512 << 20),
+		.console_uart_cfg = &uart1_console_uart_dk04,
+		.mtdids = "nand0=nand0,nand2=spi0.0",
+		.spi_nor_gpio = spi_nor_bga,
+		.spi_nor_gpio_count = ARRAY_SIZE(spi_nor_bga),
+		.nand_gpio = nand_gpio_bga,
+		.nand_gpio_count = ARRAY_SIZE(nand_gpio_bga),
+		.sw_gpio = ap_dk07_1_c1_sw_gpio_bga,
+		.sw_gpio_count = ARRAY_SIZE(ap_dk07_1_c1_sw_gpio_bga),
+		.edma_cfg = {
+			ipq40xx_edma_cfg(0, 5, PSGMII,
+			0, 1, 2, 3, 4)
+			},
+#ifdef CONFIG_IPQ40XX_I2C
+		.i2c_cfg = &i2c0,
+#endif
+		.mmc_gpio = mmc_ap_dk07,
+		.mmc_gpio_count = ARRAY_SIZE(mmc_ap_dk07),
+		.spi_nand_available = 0,
+		.nor_nand_available = 0,
+		.nor_emmc_available = 0,
+		.dtb_config_name = { "config@13", "config@ap.dk07.1-c2" },
+	},
+	{
 		.machid = MACH_TYPE_IPQ40XX_DB_DK01_1_C1,
 		.ddr_size = (256 << 20),
 		.mtdids = "nand2=spi0.0",
