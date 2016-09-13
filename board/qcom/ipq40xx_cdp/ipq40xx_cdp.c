@@ -124,12 +124,8 @@ extern int spi_nand_init(void);
 board_ipq40xx_params_t *gboard_param = (board_ipq40xx_params_t *)0xbadb0ad;
 
 #define DLOAD_DISABLE 0x1
-#define APPSBL_ADDRESS_START	0x87000000
-#define CNTX_DUMP_SIZE	0x100000
 #define RESERVE_ADDRESS_START 0x87B00000 /*TZAPPS, SMEM and TZ Regions */
 #define RESERVE_ADDRESS_SIZE 0x500000
-#define SECURE_ADDRESS_START	0x87E00000
-#define SECURE_ADDRESS_SIZE	0x200000
 
 #define SET_MAGIC 0x1
 #define CLEAR_MAGIC 0x0
@@ -701,65 +697,6 @@ int ipq_fdt_fixup_spi_nor_params(void *blob)
 	return 0;
 }
 
-void ipq40xx_set_rsvd_prop(void *blob, char *rsvd_a, char *rsvd_b, char *node)
-{
-	u32 val[2];
-	int nodeoff, ret;
-
-	if (rsvd_a != NULL) {
-		nodeoff = fdt_path_offset(blob, rsvd_a);
-		if (nodeoff < 0)
-			debug("ipq: fdt unable to find compatible node\n");
-
-		val[0] = htonl(RESERVE_ADDRESS_START);
-		val[1] = htonl(CNTX_DUMP_SIZE);
-		ret = fdt_setprop(blob, nodeoff, "reg", val, sizeof(val));
-		if (ret != 0)
-			debug("%d: unable to add node\n", ret);
-
-		nodeoff = fdt_path_offset(blob, "/reserved-memory");
-		ret = fdt_add_subnode(blob, nodeoff, node);
-		if (ret < 0)
-			debug("%d: unable to add node\n", ret);
-	}
-
-	nodeoff = fdt_path_offset(blob, rsvd_b);
-	if (nodeoff < 0)
-		debug("ipq: fdt fixup unable to find compatible node\n");
-
-	val[0] = htonl(SECURE_ADDRESS_START);
-	val[1] = htonl(SECURE_ADDRESS_SIZE);
-	ret = fdt_setprop(blob, nodeoff, "no-map", NULL, NULL);
-	if (ret != 0)
-		debug("%d: fdt fixup unable to find compatible node\n", ret);
-
-	ret = fdt_setprop(blob, nodeoff, "reg", val, sizeof(val));
-	if (ret != 0)
-		debug("%d: fdt fixup unable to find compatible node\n", ret);
-}
-
-void ipq_fdt_mem_tzapps_fixup(void *blob)
-{
-	u32 *val;
-	int nodeoff;
-	char *node = "rsvd3";
-	char *rsvd[] = {"/reserved-memory/rsvd1",
-			"/reserved-memory/rsvd2",
-			"/reserved-memory/rsvd3"};
-
-	nodeoff = fdt_path_offset(blob, "/reserved-memory/rsvd1");
-	if (nodeoff < 0) {
-		debug("ipq: fdt fixup unable to find compatible node\n");
-		return;
-	}
-
-	val = fdt_getprop(blob, nodeoff, "reg", sizeof(val));
-	if (htonl(*val) == APPSBL_ADDRESS_START)
-		ipq40xx_set_rsvd_prop(blob, rsvd[1], rsvd[2], "rsvd3");
-	else if (htonl(*val) == RESERVE_ADDRESS_START)
-		ipq40xx_set_rsvd_prop(blob, NULL, rsvd[0], NULL);
-}
-
 void ipq_fdt_mem_rsvd_fixup(void *blob)
 {
 	u32 val[2], dload;
@@ -1136,9 +1073,6 @@ void ft_board_setup(void *blob, bd_t *bd)
 	ipq_fdt_fixup_version(blob);
 #ifndef CONFIG_QCA_APPSBL_DLOAD
 	ipq_fdt_mem_rsvd_fixup(blob);
-#endif
-#ifndef CONFIG_QCA_FREE_TZAPPS
-	ipq_fdt_mem_tzapps_fixup(blob);
 #endif
 	if (sfi->flash_type == SMEM_BOOT_NAND_FLASH) {
 		mtdparts = "mtdparts=nand0";
