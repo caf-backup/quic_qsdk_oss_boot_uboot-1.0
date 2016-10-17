@@ -266,6 +266,7 @@ unsigned int get_partition_table_offset(void)
 	ret = smem_read_alloc_entry(SMEM_PARTITION_TABLE_OFFSET,
 					&primary_mibib, sizeof(uint32_t));
 	if (ret != 0) {
+		printf("smem: SMEM_PARTITION_TABLE_OFFSET not available\n");
 		primary_mibib = 0;
 	}
 
