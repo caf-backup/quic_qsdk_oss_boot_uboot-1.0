@@ -291,6 +291,14 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 {
 	struct ipq_spi_slave *ds;
 
+	/*
+	 * spi gpios are not initialised for DK07-C2. If probed, the
+	 * controller will indefinitely wait for response from slave.
+	 * Hence, return NULL.
+	 */
+	if (gd->bd->bi_arch_number == MACH_TYPE_IPQ40XX_AP_DK07_1_C2)
+		return NULL;
+
 	ds = malloc(sizeof(struct ipq_spi_slave));
 	if (!ds) {
 		printf("SPI error: malloc of SPI structure failed\n");

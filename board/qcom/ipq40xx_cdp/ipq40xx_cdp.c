@@ -464,9 +464,11 @@ void board_nand_init(void)
 		spi_nand_init();
 	}
 
+	if (gboard_param->machid != MACH_TYPE_IPQ40XX_AP_DK07_1_C2) {
 #ifdef CONFIG_IPQ40XX_SPI
-	ipq_spi_init(CONFIG_IPQ_SPI_NOR_INFO_IDX);
+		ipq_spi_init(CONFIG_IPQ_SPI_NOR_INFO_IDX);
 #endif
+	}
 }
 
 /*
