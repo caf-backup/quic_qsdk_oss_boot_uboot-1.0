@@ -43,7 +43,8 @@
 #include <linux/ctype.h>
 #include <menu.h>
 
-#if defined(CONFIG_SILENT_CONSOLE) || defined(CONFIG_POST) || defined(CONFIG_CMDLINE_EDITING)
+#if defined(CONFIG_SILENT_CONSOLE) || defined(CONFIG_POST) || \
+	defined(CONFIG_CMDLINE_EDITING) || defined(CONFIG_IPQ_ETH_INIT_DEFER)
 DECLARE_GLOBAL_DATA_PTR;
 #endif
 
@@ -254,6 +255,13 @@ int abortboot(int bootdelay)
 
 		printf("\b\b\b%2d ", bootdelay);
 	}
+
+#ifdef CONFIG_IPQ_ETH_INIT_DEFER
+	if (abort) {
+		puts("\nNet:   ");
+		eth_initialize(gd->bd);
+	}
+#endif
 
 	putc('\n');
 

@@ -194,6 +194,10 @@ static int do_boot_signedimg(cmd_tbl_t *cmdtp, int flag, int argc, char *const a
 			0, (void *)&val, sizeof(val));
 	/* check if we are in download mode */
 	if (val == DLOAD_MAGIC_COOKIE) {
+#ifdef CONFIG_IPQ_ETH_INIT_DEFER
+		puts("\nNet:   ");
+		eth_initialize(gd->bd);
+#endif
 		/* clear the magic and run the dump command */
 		val = 0x0;
 		ret = scm_call(SCM_SVC_BOOT, SCM_SVC_WR,
@@ -373,6 +377,10 @@ static int do_boot_unsignedimg(cmd_tbl_t *cmdtp, int flag, int argc, char *const
 			0, (void *)&val, sizeof(val));
 	/* check if we are in download mode */
 	if (val == DLOAD_MAGIC_COOKIE) {
+#ifdef CONFIG_IPQ_ETH_INIT_DEFER
+		puts("\nNet:   ");
+		eth_initialize(gd->bd);
+#endif
 		/* clear the magic and run the dump command */
 		val = 0x0;
 		ret = scm_call(SCM_SVC_BOOT, SCM_SVC_WR,
