@@ -26,6 +26,7 @@
 #include <net.h>
 #include <miiphy.h>
 #include <phy.h>
+DECLARE_GLOBAL_DATA_PTR;
 
 void eth_parse_enetaddr(const char *addr, uchar *enetaddr)
 {
@@ -116,6 +117,13 @@ static struct eth_device *eth_devices, *eth_current;
 
 struct eth_device *eth_get_dev(void)
 {
+#ifdef CONFIG_IPQ_ETH_INIT_DEFER
+	if (eth_current == NULL) {
+		eth_initialize(gd->bd);
+		/* Wait 3s for link to settle down */
+		mdelay(3000);
+	}
+#endif
 	return eth_current;
 }
 

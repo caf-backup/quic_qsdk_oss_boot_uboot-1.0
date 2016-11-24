@@ -182,6 +182,7 @@ typedef struct {
 #define CONFIG_SYS_NULLDEV
 #define CONFIG_CMD_XIMG
 #define CONFIG_CMD_NET
+#define CONFIG_IPQ_ETH_INIT_DEFER
 
 /* L1 cache line size is 64 bytes, L2 cache line size is 128 bytes
  * Cache flush and invalidation based on L1 cache, so the cache line
