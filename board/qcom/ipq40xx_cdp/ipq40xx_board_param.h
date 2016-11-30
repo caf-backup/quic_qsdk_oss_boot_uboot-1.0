@@ -1226,7 +1226,7 @@ board_ipq40xx_params_t board_params[] = {
 		.spi_nand_available = 0,
 		.nor_nand_available = 0,
 		.nor_emmc_available = 1,
-		.dtb_config_name = { "config@1", "config@ap.dk04.1-c1" },
+		.dtb_config_name = { "config@3", "config@ap.dk04.1-c3" },
 	},
 	{
 		.machid = MACH_TYPE_IPQ40XX_AP_DK04_1_C5,
