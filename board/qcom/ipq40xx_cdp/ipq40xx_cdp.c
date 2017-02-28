@@ -756,10 +756,10 @@ void ipq_fdt_fixup_version(void *blob)
 	int nodeoff, ret;
 	char ver[OEM_VERSION_STRING_LENGTH + VERSION_STRING_LENGTH + 1];
 
-	nodeoff = fdt_node_offset_by_compatible(blob, -1, "qcom,ipq40xx");
+	nodeoff = fdt_path_offset(blob, "/");
 
 	if (nodeoff < 0) {
-		debug("ipq: fdt fixup unable to find compatible node\n");
+		debug("ipq: fdt fixup unable to find root node\n");
 		return;
 	}
 
