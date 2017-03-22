@@ -66,6 +66,8 @@ DECLARE_GLOBAL_DATA_PTR;
 #define ADSS_AUDIO_PCM_CBCR_REG			0x077001AC
 #define ADSS_AUDIO_SPDIF_IN_FAST_CBCR_REG	0x077001EC
 
+#define TCSR_USB_HSPHY_DEVICE_MODE		0x00C700E7
+
 loff_t board_env_offset;
 loff_t board_env_range;
 loff_t board_env_size;
@@ -652,6 +654,62 @@ void qca_configure_gpio(gpio_func_data_t *gpio, uint count)
 	}
 }
 
+void ipq_fdt_fixup_usb_device_mode(void *blob)
+{
+	int nodeoff, ret, i;
+	int phy_mode = htonl(TCSR_USB_HSPHY_DEVICE_MODE);
+	const char *mode = "peripheral";
+	const char *node[] = {"/soc/ssphy", "/soc/hsphy", "/soc/usb3"};
+	char *usb_cfg;
+
+	usb_cfg = getenv("usb_mode");
+	if (!usb_cfg)
+		return;
+
+	if (strcmp(usb_cfg, "device"))
+		return;
+
+	nodeoff = fdt_path_offset(blob, "/soc/tcsr");
+	if (nodeoff < 0) {
+		printf("ipq: fdt fixup unable to find node /soc/tcsr\n");
+		return;
+	}
+	ret = fdt_setprop(blob, nodeoff, "ipq,usb-hsphy-mode-select",
+					&phy_mode, sizeof(phy_mode));
+	if (ret != 0) {
+		printf("ipq: unable to set prop: %d\n", ret);
+		return;
+	}
+
+	phy_mode = 0;
+	for (i = 0; i < (sizeof(node) / sizeof(node[0])); i++) {
+		nodeoff = fdt_path_offset(blob, node[i]);
+		if (nodeoff < 0) {
+			printf("ipq: fdt fixup unable to find node %s\n",
+								node[i]);
+			continue;
+		}
+		ret = fdt_setprop(blob, nodeoff, "qca,host",
+					&phy_mode, sizeof(phy_mode));
+		if (ret != 0) {
+			printf("ipq: unable to set prop: %d\n", ret);
+			continue;
+		}
+	}
+
+	nodeoff = fdt_path_offset(blob, "/soc/usb3/dwc3");
+	if (nodeoff < 0) {
+		printf("ipq: fdt fixup unable to find node /soc/usb3/dwc3\n");
+		return;
+	}
+	ret = fdt_setprop(blob, nodeoff, "dr_mode",
+				mode, (strlen(mode) + 1));
+	if (ret != 0) {
+		printf("ipq: unable to set prop: %d\n", ret);
+		return;
+	}
+}
+
 #ifdef CONFIG_OF_BOARD_SETUP
 struct flash_node_info {
 	const char *compat;	/* compatible string */
@@ -1118,6 +1176,7 @@ void ft_board_setup(void *blob, bd_t *bd)
 	dcache_disable();
 	ipq40xx_set_ethmac_addr();
 	fdt_fixup_ethernet(blob);
+	ipq_fdt_fixup_usb_device_mode(blob);
 
 #ifdef CONFIG_QCA_MMC
         board_mmc_deinit();
