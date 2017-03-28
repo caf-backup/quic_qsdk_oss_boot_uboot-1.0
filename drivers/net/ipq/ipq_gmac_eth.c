@@ -633,7 +633,7 @@ int ipq_gmac_init(ipq_gmac_board_cfg_t *gmac_cfg)
 		dev[i]->write_hwaddr = ipq_eth_wr_macaddr;
 		dev[i]->priv = (void *) ipq_gmac_macs[i];
 
-		sprintf(dev[i]->name, "eth%d", i);
+		snprintf(dev[i]->name, sizeof(dev[i]->name), "eth%d", i);
 
 		/*
 		 * Setting the Default MAC address if the MAC read from ART partition

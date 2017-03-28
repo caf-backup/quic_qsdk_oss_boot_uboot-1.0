@@ -558,13 +558,13 @@ static void ipq40xx_set_ethmac_addr(void)
 			 * dts entry for the ethernet entries, which in turn
 			 * will be picked up by the HLOS driver
 			 */
-			sprintf(mac, "%x:%x:%x:%x:%x:%x",
+			snprintf(mac, sizeof(mac), "%x:%x:%x:%x:%x:%x",
 					mac_addr[0], mac_addr[1],
 					mac_addr[2], mac_addr[3],
 					mac_addr[4], mac_addr[5]);
 			setenv(ethaddr, mac);
 		}
-		sprintf(ethaddr, "eth%daddr", (i + 1));
+		snprintf(ethaddr, sizeof(ethaddr), "eth%daddr", (i + 1));
 	}
 }
 
@@ -1140,13 +1140,13 @@ void ft_board_setup(void *blob, bd_t *bd)
 		ipq_fdt_fixup_spi_nor_params(blob);
 		if (gboard_param->spi_nand_available &&
 			get_which_flash_param("rootfs") == 0) {
-			sprintf(parts_str,
+			snprintf(parts_str, sizeof(parts_str),
 				"mtdparts=nand1:0x%x@0(rootfs);spi0.0",
 				IPQ_NAND_ROOTFS_SIZE);
 			mtdparts = parts_str;
 		} else if (gboard_param->nor_nand_available &&
 			get_which_flash_param("rootfs") == 0) {
-			sprintf(parts_str,
+			snprintf(parts_str, sizeof(parts_str),
 				"mtdparts=nand0:0x%x@0(rootfs);spi0.0",
 				IPQ_NAND_ROOTFS_SIZE);
 			mtdparts = parts_str;
