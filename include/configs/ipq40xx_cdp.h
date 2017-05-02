@@ -93,6 +93,11 @@
 #define CONFIG_OF_LIBFDT		1
 #define CONFIG_OF_BOARD_SETUP		1
 
+/*
+ * IPQ_TFTP_MAX_ADDR: Starting address of UBoot load/Execution region.
+ * TFTP file can be written upto IPQ_TFTP_MAX_ADDR.
+ */
+#define IPQ_TFTP_MAX_ADDR		0x87000000
 #define CONFIG_IPQ40XX_I2C
 #ifdef CONFIG_IPQ40XX_I2C
 #define CONFIG_CMD_I2C
