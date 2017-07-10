@@ -188,7 +188,9 @@ store_block(unsigned block, uchar *src, unsigned len)
 		 * The file to be tftp'ed should not overwrite the
 		 * code/stack area
 		 */
-		if ((load_addr + newsize) >= IPQ_TFTP_MAX_ADDR) {
+		if (((load_addr + newsize) >= CONFIG_SYS_SDRAM_END) ||
+		    (((load_addr + newsize) >= IPQ_TFTP_MAX_ADDR) &&
+		     ((load_addr + newsize) < CONFIG_TZ_END_ADDR))) {
 			puts("\nError file size too large\n");
 			TftpState = STATE_TOO_LARGE;
 			net_set_state(NETLOOP_FAIL);
@@ -787,7 +789,9 @@ void TftpStart(enum proto_t protocol)
 		 * region where linux is executed.
 		 */
 		if ((load_addr < CONFIG_SYS_LOAD_ADDR) ||
-		    (load_addr >= IPQ_TFTP_MAX_ADDR)) {
+		    (load_addr >= CONFIG_SYS_SDRAM_END) ||
+		    ((load_addr >= IPQ_TFTP_MAX_ADDR) &&
+		     (load_addr < CONFIG_TZ_END_ADDR))) {
 			puts("\nError specified load address not allowed\n");
 			TftpState = STATE_TOO_LARGE;
 			net_set_state(NETLOOP_FAIL);
