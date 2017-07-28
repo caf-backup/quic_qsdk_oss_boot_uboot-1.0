@@ -296,8 +296,7 @@ int board_init(void)
 #endif
 	}
 
-	if (gboard_param->machid == MACH_TYPE_IPQ40XX_AP_DK04_1_C2)
-		disable_audio_clks();
+	disable_audio_clks();
 
 	return 0;
 }
