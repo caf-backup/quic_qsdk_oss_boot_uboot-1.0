@@ -128,12 +128,14 @@ endif
 # cc-version
 # Usage gcc-ver := $(call cc-version)
 cc-version = $(shell $(SHELL) $(SRCTREE)/tools/gcc-version.sh $(CC))
-
+bfd_ld_exist = $(shell if $(CROSS_COMPILE)ld.bfd -v > /dev/null 2>&1; \
+		then echo "$(1)"; \
+		else echo "$(2)"; fi;)
 #
 # Include the make variables (CC, etc...)
 #
 AS	= $(CROSS_COMPILE)as
-LD	= $(CROSS_COMPILE)ld
+LD     = $(call bfd_ld_exist, "$(CROSS_COMPILE)ld.bfd", "$(CROSS_COMPILE)ld")
 CC	= $(CROSS_COMPILE)gcc
 CPP	= $(CC) -E
 AR	= $(CROSS_COMPILE)ar
