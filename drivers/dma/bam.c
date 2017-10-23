@@ -32,6 +32,7 @@
 #include <common.h>
 #include <asm/arch-qcom-common/bam.h>
 #define HLOS_EE_INDEX          0
+#define BAM_IRQ_WAIT_CYCLE	5000000
 
 /* Resets pipe registers and state machines */
 void bam_pipe_reset(struct bam_instance *bam,
@@ -56,16 +57,23 @@ int bam_wait_for_interrupt(struct bam_instance *bam,
                            enum p_int_type interrupt)
 {
 	uint32_t val;
+	uint32_t retry_count = BAM_IRQ_WAIT_CYCLE;
+	uint32_t irq_index = 1 << bam->pipe[pipe_num].pipe_num;
 
 	while (1)
 	{
 		/* Wait for a interrupt on the right pipe */
 		do{
+			retry_count--;
 			/* Determine the pipe causing the interrupt */
 			val = readl(BAM_IRQ_SRCS(bam->base, bam->ee));
+			udelay(1);
 			/* Flush out the right most global interrupt bit */
-		} while (!((val & BAM_IRQ_SRCS_PIPE_MASK) &
-				   (1 << bam->pipe[pipe_num].pipe_num)));
+		} while ((!((val & BAM_IRQ_SRCS_PIPE_MASK) & irq_index))
+							&& retry_count);
+
+		if(!((val & BAM_IRQ_SRCS_PIPE_MASK) & irq_index))
+			goto bam_irq_error;
 
 		/* Check the interrupt type */
 		/* Read interrupt status register */
@@ -88,6 +96,7 @@ int bam_wait_for_interrupt(struct bam_instance *bam,
 bam_wait_int_error:
 
 	printf("bam: Unexpected interrupt : val %u\n", val);
+bam_irq_error:
 	return BAM_RESULT_FAILURE;
 }
 
