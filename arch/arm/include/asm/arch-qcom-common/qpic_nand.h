@@ -387,8 +387,8 @@ struct qpic_nand_init_config
 
 enum nand_ecc_width
 {
-	NAND_WITH_4_BIT_ECC,
-	NAND_WITH_8_BIT_ECC,
+	NAND_WITH_4_BIT_ECC = 4,
+	NAND_WITH_8_BIT_ECC = 8,
 };
 
 struct qpic_nand_dev {
@@ -409,6 +409,7 @@ struct qpic_nand_dev {
 	unsigned cws_per_page;
 	unsigned bad_blk_loc;
 	unsigned dev_cfg;
+	unsigned bit_flip_threshold;
 	uint32_t cfg0;
 	uint32_t cfg1;
 	uint32_t cfg0_raw;

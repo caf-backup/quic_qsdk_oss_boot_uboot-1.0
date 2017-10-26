@@ -514,6 +514,8 @@ qpic_nand_onfi_save_params(struct mtd_info *mtd,
 	else
 		dev->ecc_width = NAND_WITH_4_BIT_ECC;
 
+	dev->bit_flip_threshold = (3 * dev->ecc_width) / 4;
+
 	return onfi_ret;
 }
 
@@ -535,7 +537,7 @@ qpic_nand_save_config(struct mtd_info *mtd)
 	/* Codeword Size = UD_SIZE_BYTES + ECC_PARITY_SIZE_BYTES
 	 *                          + SPARE_SIZE_BYTES + Bad Block size
 	 */
-	if (dev->ecc_width & NAND_WITH_8_BIT_ECC) {
+	if (dev->ecc_width == NAND_WITH_8_BIT_ECC) {
 		dev->cw_size = NAND_CW_SIZE_8_BIT_ECC;
 		/* Use 8-bit ecc */
 		dev->ecc_bch_cfg |= (1 << NAND_DEV0_ECC_MODE_SHIFT);
@@ -1363,6 +1365,7 @@ static int qpic_nand_get_info(struct mtd_info *mtd, uint32_t flash_id)
 		qpic_nand_get_info_flash_dev(mtd, flash_dev);
 
 	dev->ecc_width = NAND_WITH_4_BIT_ECC;
+	dev->bit_flip_threshold = (3 * dev->ecc_width) / 4;
 
 	dev->num_blocks = mtd->size;
 	dev->num_blocks /= (dev->block_size);
@@ -1719,7 +1722,7 @@ qpic_nand_read_page(struct mtd_info *mtd, uint32_t page,
 	for (i = 0; i < (dev->cws_per_page); i++) {
 		num_errors = buffer_sts[i];
 		num_errors &= NUM_ERRORS_MASK;
-		if(num_errors)
+		if(num_errors >= dev->bit_flip_threshold)
 			mtd->ecc_stats.corrected++;
 	}
 qpic_nand_read_page_error:
