@@ -120,6 +120,8 @@
 #define CONFIG_PCI_SCAN_SHOW
 #endif
 
+#define CONFIG_CMD_CACHE
+
 #ifndef __ASSEMBLY__
 #include <compiler.h>
 extern loff_t board_env_offset;
