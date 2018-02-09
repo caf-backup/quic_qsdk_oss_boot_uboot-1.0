@@ -300,6 +300,14 @@ void main_loop (void)
 	char bcs_set[16];
 #endif /* CONFIG_BOOTCOUNT_LIMIT */
 
+#ifdef CONFIG_QCA_APPSBL_DLOAD
+	if (apps_iscrashed()) {
+		printf("Crashdump magic found, initializing dump activity..\n");
+		dump_func();
+		return;
+	}
+#endif
+
 #ifdef CONFIG_BOOTCOUNT_LIMIT
 	bootcount = bootcount_load();
 	bootcount++;
