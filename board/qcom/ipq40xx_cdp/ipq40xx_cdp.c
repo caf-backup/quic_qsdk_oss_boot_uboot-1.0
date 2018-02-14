@@ -67,9 +67,6 @@ DECLARE_GLOBAL_DATA_PTR;
 #define ADSS_AUDIO_SPDIF_IN_FAST_CBCR_REG	0x077001EC
 
 #define TCSR_USB_HSPHY_DEVICE_MODE		0x00C700E7
-#define TCSR_BOOT_MISC_DETECT			0x0193D100
-
-#define DLOAD_MAGIC_COOKIE	0x10
 
 loff_t board_env_offset;
 loff_t board_env_range;
@@ -1507,11 +1504,3 @@ void board_pci_deinit(void)
 	pcie_clock_disable(GCC_PCIE_AHB_CBCR);
 }
 #endif /* CONFIG_IPQ40XX_PCI */
-
-int apps_iscrashed(void)
-{
-	if (readl(TCSR_BOOT_MISC_DETECT) == DLOAD_MAGIC_COOKIE)
-		return 1;
-
-	return 0;
-}
