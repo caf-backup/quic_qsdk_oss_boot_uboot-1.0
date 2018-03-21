@@ -661,8 +661,10 @@ void ipq_fdt_fixup_usb_device_mode(void *blob)
 	int nodeoff, ret, i;
 	int phy_mode = htonl(TCSR_USB_HSPHY_DEVICE_MODE);
 	const char *mode = "peripheral";
+	const char *property = NULL;
 	const char *node[] = {"/soc/ssphy", "/soc/hsphy", "/soc/usb3"};
 	char *usb_cfg;
+	struct fdt_property *prop = NULL;
 
 	usb_cfg = getenv("usb_mode");
 	if (!usb_cfg)
@@ -676,7 +678,25 @@ void ipq_fdt_fixup_usb_device_mode(void *blob)
 		printf("ipq: fdt fixup unable to find node /soc/tcsr\n");
 		return;
 	}
-	ret = fdt_setprop(blob, nodeoff, "ipq,usb-hsphy-mode-select",
+
+	/* Check the property name used for hs-phy mode configuration */
+	prop = fdt_get_property(blob, nodeoff,\
+				"ipq,usb-hsphy-mode-select", &ret);
+	if (prop)
+		property = "ipq,usb-hsphy-mode-select";
+	else {
+		prop = fdt_get_property(blob, nodeoff,\
+				"qcom,usb-hsphy-mode-select", &ret);
+		if (prop)
+			property = "qcom,usb-hsphy-mode-select";
+	}
+
+	if (!property) {
+		printf("ipq: fdt fixup unable to find hs-phy mode property\n");
+		return;
+	}
+
+	ret = fdt_setprop(blob, nodeoff, property,\
 					&phy_mode, sizeof(phy_mode));
 	if (ret != 0) {
 		printf("ipq: unable to set prop: %d\n", ret);
