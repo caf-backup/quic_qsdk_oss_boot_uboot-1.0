@@ -431,7 +431,8 @@ void board_nand_init(void)
 		(gboard_param->machid == MACH_TYPE_IPQ40XX_AP_DK07_1_C2) ||
 		(gboard_param->machid == MACH_TYPE_IPQ40XX_AP_DK07_1_C3) ||
 		(gboard_param->machid == MACH_TYPE_IPQ40XX_AP_DK04_1_C4) ||
-		(gboard_param->machid == MACH_TYPE_IPQ40XX_AP_DK04_1_C5)) {
+		(gboard_param->machid == MACH_TYPE_IPQ40XX_AP_DK04_1_C5) ||
+		(gboard_param->machid == MACH_TYPE_IPQ40XX_AP_DK04_1_C6)) {
 
 		struct qpic_nand_init_config config;
 		config.pipes.read_pipe = DATA_PRODUCER_PIPE;
@@ -608,6 +609,7 @@ int board_eth_init(bd_t *bis)
 	case MACH_TYPE_IPQ40XX_AP_DK04_1_C1:
 	case MACH_TYPE_IPQ40XX_AP_DK04_1_C3:
 	case MACH_TYPE_IPQ40XX_AP_DK04_1_C5:
+	case MACH_TYPE_IPQ40XX_AP_DK04_1_C6:
 		mdelay(1);
 		writel(GPIO_OUT, GPIO_IN_OUT_ADDR(47));
 		ipq40xx_register_switch(ipq40xx_qca8075_phy_init);
@@ -654,6 +656,24 @@ void qca_configure_gpio(gpio_func_data_t *gpio, uint count)
 			gpio->gpio_vm, gpio->gpio_od_en, gpio->gpio_pu_res);
 		gpio++;
 	}
+}
+
+void ipq_fdt_fixup_socinfo(void *blob)
+{
+	int nodeoff, ret;
+	const char *model = "Qualcomm Technologies, Inc. IPQ4019/AP-DK04.1-C6";
+
+	nodeoff = fdt_path_offset(blob, "/");
+
+	if (nodeoff < 0) {
+		printf("ipq: fdt fixup cannot find root node\n");
+		return;
+	}
+
+	if (gboard_param->machid == MACH_TYPE_IPQ40XX_AP_DK04_1_C6)
+		ret = fdt_setprop(blob, nodeoff, "model",
+			  model, (strlen(model) + 1));
+	return;
 }
 
 void ipq_fdt_fixup_usb_device_mode(void *blob)
@@ -1169,6 +1189,7 @@ void ft_board_setup(void *blob, bd_t *bd)
 
 		ipq_fdt_fixup_mtdparts(blob, nodes);
 	}
+	ipq_fdt_fixup_socinfo(blob);
 	s = (getenv("gmacnumber"));
 	if (s) {
 		strict_strtoul(s, 16, &gmac_no);
