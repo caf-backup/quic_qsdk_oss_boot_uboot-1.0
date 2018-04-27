@@ -12,6 +12,7 @@ ifeq ($(CONFIG_QCA_APPSBL_DLOAD),y)
 COBJS-y	+= cmd_dumpqca_data.o
 endif
 COBJS-y += cmd_blowsecfuse.o
+COBJS-y += cmd_sec_auth.o
 SRCS	:= $(SOBJS-y:.o=.S) $(COBJS-y:.o=.c)
 OBJS	:= $(addprefix $(obj),$(COBJS-y) $(SOBJS-y))
 
