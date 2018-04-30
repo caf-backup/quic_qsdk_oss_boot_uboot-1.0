@@ -31,6 +31,8 @@
 #define QFPROM_IS_AUTHENTICATE_CMD	0x7
 
 #define KERNEL_AUTH_CMD			0x13
+#define SCM_CMD_SEC_AUTH		0x15
+#define IS_CALL_AVAIL_CMD		0x1
 #define CE_CHN_SWITCH_CMD		0x2
 
 int scm_init(void);
