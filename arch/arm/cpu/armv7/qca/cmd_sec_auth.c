@@ -52,7 +52,7 @@ U_BOOT_CMD(is_sec_boot_enabled, 1, 0, do_is_sec_boot_enabled,
 static int is_scm_sec_auth_available(u32 svc_id, u32 cmd_id)
 {
 	int ret;
-	__le32 svc_cmd = cpu_to_le32((svc_id << 10) | cmd_id);
+	__le32 svc_cmd = cpu_to_le32((svc_id << SCM_SVC_ID_SHIFT) | cmd_id);
 	__le32 ret_val = 0;
 
 	ret = scm_call(SCM_SVC_INFO, IS_CALL_AVAIL_CMD, &svc_cmd,
