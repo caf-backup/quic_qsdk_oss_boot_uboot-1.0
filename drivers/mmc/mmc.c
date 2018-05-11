@@ -232,7 +232,7 @@ int mmc_send_status(struct mmc *mmc, int timeout)
 
 		udelay(1000);
 
-	} while (timeout--);
+	} while (--timeout);
 
 #ifdef CONFIG_MMC_TRACE
 	status = (cmd.response[0] & MMC_STATUS_CURR_STATE) >> 9;
