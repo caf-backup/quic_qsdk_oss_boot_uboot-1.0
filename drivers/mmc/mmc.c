@@ -375,25 +375,39 @@ mmc_berase(int dev_num, unsigned long start, lbaint_t blkcnt)
 
 		return blk;
 	} else {
-		err = mmc_erase_t(mmc, start, blkcnt, arg);
+		if ( mmc->quirks & MMC_QUIRK_SECURE_TRIM ) {
+			arg = MMC_TRIM_ARG;
+			err = mmc_erase_t(mmc, start, blkcnt, arg);
 
-		if (err)
-			return -1;
+			if (err)
+				return -1;
 
-		/* Waiting for the ready status */
-		if (mmc_send_status(mmc, timeout))
-			return -1;
+			/* Waiting for the ready status */
+			if (mmc_send_status(mmc, timeout))
+				return -1;
+		} else {
 
-		arg = MMC_SECURE_TRIM2_ARG;
-		err = mmc_erase_t(mmc, start, blkcnt, arg);
+			err = mmc_erase_t(mmc, start, blkcnt, arg);
 
-		if (err)
-			return -1;
+			if (err)
+				return -1;
 
-		/* Waiting for the ready status */
-		if (mmc_send_status(mmc, timeout)) {
-			return 0;
+			/* Waiting for the ready status */
+			if (mmc_send_status(mmc, timeout))
+				return -1;
+
+			arg = MMC_SECURE_TRIM2_ARG;
+			err = mmc_erase_t(mmc, start, blkcnt, arg);
+
+			if (err)
+				return -1;
+
+			/* Waiting for the ready status */
+			if (mmc_send_status(mmc, timeout)) {
+				return 0;
+			}
 		}
+
 		return  blkcnt;
 	}
 }
@@ -1296,6 +1310,11 @@ int mmc_startup(struct mmc *mmc)
 	snprintf(mmc->block_dev.revision, sizeof(mmc->block_dev.revision),
 			"%d.%d", mmc->cid[2] >> 28, (mmc->cid[2] >> 24) & 0xf);
 	init_part(&mmc->block_dev);
+
+	/* Add device specific quirks */
+	if (((mmc->cid[0] & MMC_MID_MASK) == MMC_MID_SANDISK) &&
+		(strncmp(mmc->block_dev.product, "SEM08", 5) == 0))
+		mmc->quirks |= MMC_QUIRK_SECURE_TRIM;
 
 	return 0;
 }
