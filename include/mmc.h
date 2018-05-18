@@ -210,6 +210,7 @@
 
 #define MMC_MID_MASK (0xFF << 24)
 #define MMC_MID_SANDISK (0x45 << 24)
+#define MMC_MID_THOSIBA (0x11 << 24)
 
 /*
  * Quirks
