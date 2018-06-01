@@ -171,7 +171,7 @@ HOSTCPPFLAGS =	-idirafter $(SRCTREE)/include \
 		-I $(SRCTREE)/tools \
 		-DCONFIG_SYS_TEXT_BASE=$(CONFIG_SYS_TEXT_BASE) \
 		-DUSE_HOSTCC \
-		-D__KERNEL_STRICT_NAMES
+		-D__KERNEL_STRICT_NAMES -fpie
 
 
 all:	$(obj).depend $(BINS) $(LOGO-y) subdirs
