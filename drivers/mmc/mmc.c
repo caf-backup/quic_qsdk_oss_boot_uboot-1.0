@@ -1315,7 +1315,7 @@ int mmc_startup(struct mmc *mmc)
 	if (((mmc->cid[0] & MMC_MID_MASK) == MMC_MID_SANDISK) &&
 		(strncmp(mmc->block_dev.product, "SEM08", 5) == 0))
 		mmc->quirks |= MMC_QUIRK_SECURE_TRIM;
-	if (((mmc->cid[0] & MMC_MID_MASK) == MMC_MID_THOSIBA) &&
+	if (((mmc->cid[0] & MMC_MID_MASK) == MMC_MID_TOSHIBA) &&
 		(strncmp(mmc->block_dev.product, "004GE", 5) == 0))
 		mmc->quirks |= MMC_QUIRK_SECURE_TRIM;
 
