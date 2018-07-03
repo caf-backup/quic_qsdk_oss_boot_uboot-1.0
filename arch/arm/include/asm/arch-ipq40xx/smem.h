@@ -93,6 +93,8 @@ uint32_t get_nand_block_size(uint8_t dev_id);
 unsigned int get_which_flash_param(char *part_name);
 int smem_ram_ptable_init(struct smem_ram_ptable *smem_ram_ptable);
 int smem_get_build_version(char *version_name, int buf_size, int index);
+int ipq_smem_get_socinfo_cpu_type(uint32_t *cpu_type);
+int ipq_smem_get_socinfo_version(uint32_t *version);
 
 typedef struct {
 	loff_t offset;

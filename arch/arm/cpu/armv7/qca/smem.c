@@ -455,6 +455,42 @@ unsigned int smem_get_board_platform_type()
 	return machid;
 }
 
+int ipq_smem_get_socinfo_cpu_type(uint32_t *cpu_type)
+{
+	int smem_status;
+	struct qca_platfrom platform_type;
+
+	smem_status = smem_read_alloc_entry(SMEM_HW_SW_BUILD_ID,
+			&platform_type,	sizeof(struct qca_platfrom));
+
+	if (!smem_status) {
+		*cpu_type = platform_type.id;
+		debug("smem: socinfo - cpu type = %d\n",*cpu_type);
+	} else {
+		printf("smem: Get socinfo failed\n");
+	}
+
+	return smem_status;
+}
+
+int ipq_smem_get_socinfo_version(uint32_t *version)
+{
+	int smem_status;
+	struct qca_platfrom platform_type;
+
+	smem_status = smem_read_alloc_entry(SMEM_HW_SW_BUILD_ID,
+			&platform_type,	sizeof(struct qca_platfrom));
+
+	if (!smem_status) {
+		*version = platform_type.version;
+		debug("smem: socinfo - version = 0x%x\n",*version);
+	} else {
+		printf("smem: Get socinfo failed\n");
+	}
+
+	return smem_status;
+}
+
 /**
  * smem_ptable_init - initializes RAM partition table from SMEM
  *

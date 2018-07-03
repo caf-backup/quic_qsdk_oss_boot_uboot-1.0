@@ -662,6 +662,8 @@ void qca_configure_gpio(gpio_func_data_t *gpio, uint count)
 void ipq_fdt_fixup_socinfo(void *blob)
 {
 	int nodeoff, ret;
+	uint32_t cpu_type;
+	uint32_t soc_version, soc_version_major, soc_version_minor;
 	const char *model = "Qualcomm Technologies, Inc. IPQ4019/AP-DK04.1-C6";
 
 	nodeoff = fdt_path_offset(blob, "/");
@@ -674,7 +676,39 @@ void ipq_fdt_fixup_socinfo(void *blob)
 	if (gboard_param->machid == MACH_TYPE_IPQ40XX_AP_DK04_1_C6)
 		ret = fdt_setprop(blob, nodeoff, "model",
 			  model, (strlen(model) + 1));
-	return;
+
+	/* Add "cpu_type" to root node of the devicetree*/
+	ret = ipq_smem_get_socinfo_cpu_type(&cpu_type);
+	if (!ret) {
+		ret = fdt_setprop(blob, nodeoff, "cpu_type",
+				  &cpu_type, sizeof(cpu_type));
+		if (ret)
+			printf("%s: cannot set cpu type %d\n", __func__, ret);
+	} else {
+		printf("ipq: fdt fixup cannot get socinfo\n");
+	}
+
+	ret = ipq_smem_get_socinfo_version((uint32_t *)&soc_version);
+	if (!ret) {
+		soc_version_major = SOCINFO_VERSION_MAJOR(soc_version);
+		soc_version_minor = SOCINFO_VERSION_MINOR(soc_version);
+
+		ret = fdt_setprop(blob, nodeoff, "soc_version_major",
+				  &soc_version_major,
+				  sizeof(soc_version_major));
+		if (ret)
+			printf("%s: cannot set soc_version_major %d\n",
+			       __func__, soc_version_major);
+
+		ret = fdt_setprop(blob, nodeoff, "soc_version_minor",
+				  &soc_version_minor,
+				  sizeof(soc_version_minor));
+		if (ret)
+			printf("%s: cannot set soc_version_minor %d\n",
+			       __func__, soc_version_minor);
+	} else {
+		printf("%s: cannot get soc version\n", __func__);
+	}
 }
 
 void ipq_fdt_fixup_usb_device_mode(void *blob)
