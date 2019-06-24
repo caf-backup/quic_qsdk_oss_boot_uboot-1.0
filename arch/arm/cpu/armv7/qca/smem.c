@@ -77,9 +77,10 @@ typedef enum {
 	SMEM_BOOT_FLASH_DENSITY = 482,
 	SMEM_PARTITION_TABLE_OFFSET = 483,
 	SMEM_BOOT_DUALPARTINFO = 484,
+	SMEM_NUM_CPUINFO = 485,
 	SMEM_FIRST_VALID_TYPE = SMEM_SPINLOCK_ARRAY,
-	SMEM_LAST_VALID_TYPE = SMEM_BOOT_DUALPARTINFO,
-	SMEM_MAX_SIZE = SMEM_BOOT_DUALPARTINFO + 1,
+	SMEM_LAST_VALID_TYPE = SMEM_NUM_CPUINFO,
+	SMEM_MAX_SIZE = SMEM_NUM_CPUINFO + 1,
 } smem_mem_type_t;
 
 struct smem_proc_comm {
@@ -649,3 +650,15 @@ U_BOOT_CMD(
 	"print SMEM FLASH information",
 	"\n    - print flash details gathered from SMEM\n"
 );
+
+int smem_read_cpu_count()
+{
+	uint32_t core_no;
+
+	if (!smem_read_alloc_entry(SMEM_NUM_CPUINFO, &core_no,
+			sizeof(uint32_t))) {
+		if (core_no != 4)
+			return core_no;
+	}
+	return -1;
+}

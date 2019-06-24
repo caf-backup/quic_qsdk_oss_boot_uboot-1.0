@@ -144,5 +144,6 @@ int smem_bootconfig_info(void);
 unsigned int get_rootfs_active_partition(void);
 unsigned int get_mibib_active_partition(void);
 char *qca_smem_part_to_mtdparts(char *mtdid);
+int smem_read_cpu_count(void);
 
 #endif
