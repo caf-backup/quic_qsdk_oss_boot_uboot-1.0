@@ -234,6 +234,47 @@ static void setup_end_tag(bd_t *bd)
 #endif
 
 #ifdef CONFIG_OF_LIBFDT
+
+#ifdef CONFIG_IPQ40XX
+static void fixup_cpus_node(void *blob)
+{
+	int numcpus;
+	int nodeoff;
+
+	numcpus =  smem_read_cpu_count();
+	if (numcpus == 2) {
+		nodeoff = fdt_path_offset(blob, "/cpus/cpu@2");
+		if (nodeoff >= 0)
+			fdt_del_node((void *)blob, nodeoff);
+		else
+			printf("fixup_cpus_node: can't disable cpu2\n");
+		nodeoff = fdt_path_offset(blob, "/cpus/cpu@3");
+		if (nodeoff >= 0)
+			fdt_del_node((void *)blob, nodeoff);
+		else
+			printf("fixup_cpus_node: can't disable cpu3\n");
+	} else if (numcpus == 1) {
+		nodeoff = fdt_path_offset(blob, "/cpus/cpu@1");
+		if (nodeoff >= 0)
+			fdt_del_node((void *)blob, nodeoff);
+		else
+			printf("fixup_cpus_node: can't disable cpu1\n");
+		nodeoff = fdt_path_offset(blob, "/cpus/cpu@2");
+		if (nodeoff >= 0)
+			fdt_del_node((void *)blob, nodeoff);
+		else
+			printf("fixup_cpus_node: can't disable cpu2\n");
+		nodeoff = fdt_path_offset(blob, "/cpus/cpu@3");
+		if (nodeoff >= 0)
+			fdt_del_node((void *)blob, nodeoff);
+		else
+			printf("fixup_cpus_node: can't disable cpu3\n");
+	}
+
+	return;
+}
+#endif
+
 static int create_fdt(bootm_headers_t *images)
 {
 	ulong of_size = images->ft_len;
@@ -260,6 +301,9 @@ static int create_fdt(bootm_headers_t *images)
 
 	fdt_chosen(*of_flat_tree, 1);
 	fixup_memory_node(*of_flat_tree);
+#ifdef CONFIG_IPQ40XX
+	fixup_cpus_node(*of_flat_tree);
+#endif
 	fdt_fixup_ethernet(*of_flat_tree);
 	fdt_initrd(*of_flat_tree, *initrd_start, *initrd_end, 1);
 #ifdef CONFIG_OF_BOARD_SETUP
