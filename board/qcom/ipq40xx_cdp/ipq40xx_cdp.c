@@ -344,9 +344,8 @@ int board_late_init(void)
 	/* get machine type from SMEM and set in env */
 	machid = gd->bd->bi_arch_number;
 	printf("machid: %x\n", machid);
-	flash_type = ((readl(RD_FAST_BOOT_CONFIG) & 0x1E ) >> 1);
-	setenv_addr("flash_type", (void *)flash_type);
-	printf("flash_type: %d\n", flash_type);
+	setenv_ulong("flash_type", (ulong) sfi->flash_type);
+	printf("flash_type: %d\n", sfi->flash_type);
 	if (machid != 0) {
 		setenv_addr("machid", (void *)machid);
 		gd->bd->bi_arch_number = machid;
